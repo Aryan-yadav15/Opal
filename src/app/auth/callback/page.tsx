@@ -2,7 +2,7 @@ import { onAuthenticateUser } from "@/actions/user";
 import { redirect } from "next/navigation";
 import React from "react";
 
-type Props = {};
+type Props = {};  
 
 const authCallbackPage = async (props: Props) => {
   const auth = await onAuthenticateUser();

@@ -7,10 +7,16 @@ type Props = {}
 const DashboardPage = async (props: Props) => {
   const auth = await onAuthenticateUser();
  
-  if (auth.status === 200 || auth.status === 201) {
-    return redirect(`/dashboard/${auth.user?.firstname}${auth.user?.lastname}`);
+  if (!auth.user && (auth.status === 200 || auth.status === 201)) {
+    return redirect("/auth/sign-in");
   }
-  if (auth.status === 500 || auth.status === 400 || auth.status === 404) {
+
+  if (auth.status === 200 || auth.status === 201) {
+    return redirect(`/dashboard/${auth.user?.workspace[0].id}`)
+
+  }
+
+  if ([500, 400, 404, 403].includes(auth.status)) {
     return redirect("/auth/sign-in");
   }
 

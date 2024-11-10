@@ -3,13 +3,11 @@
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
-
-
 export const onAuthenticateUser = async () => {
   try {
-    const user = await currentUser()
+    const user = await currentUser();
     if (!user) {
-      return { status: 403 }
+      return { status: 403 };
     }
 
     const userExist = await client.user.findUnique({
@@ -25,11 +23,11 @@ export const onAuthenticateUser = async () => {
           },
         },
       },
-    })
+    });
     if (userExist) {
-      return { status: 200, user: userExist }
+      return { status: 200, user: userExist };
     }
-    
+
     const newUser = await client.user.create({
       data: {
         clerkid: user.id,
@@ -46,7 +44,7 @@ export const onAuthenticateUser = async () => {
         workspace: {
           create: {
             name: `${user.firstName}'s Workspace`,
-            type: 'PERSONAL',
+            type: "PERSONAL",
           },
         },
       },
@@ -64,13 +62,47 @@ export const onAuthenticateUser = async () => {
           },
         },
       },
-    })
+    });
     if (newUser) {
-      return { status: 201, user: newUser }
+      return { status: 201, user: newUser };
     }
-    return { status: 400 }
+    return { status: 400 };
   } catch (error) {
-    console.log('🔴 ERROR', error)
-    return { status: 500 }
+    console.log("🔴 ERROR", error);
+    return { status: 500 };
   }
-}
+};
+
+export const getNotification = async () => {
+  try {
+    const user = await currentUser();
+
+    if (!user) {
+      return { status: 400 };
+    }
+    const notifications = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        notification: true,
+        _count: {
+          select: {
+            notification: true,
+          },
+        },
+      },
+    });
+    if (notifications && notifications.notification.length > 0)
+      return { status: 200, data: notifications };
+    return {
+      status: 403,
+      data: [],
+    };
+  } catch (error) {
+    return {
+      status: 403,
+      data: [],
+    };
+  }
+};

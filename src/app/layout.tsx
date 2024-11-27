@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme";
+import ReactQueryProvider from "@/react-query";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
@@ -29,7 +30,7 @@ export default function RootLayout({
             storageKey="opal-theme"
             forcedTheme="dark"
           >
-            {children}
+            <ReactQueryProvider>{children}</ReactQueryProvider>
           </ThemeProvider>
         </body>
       </html>
